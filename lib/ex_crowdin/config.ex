@@ -23,6 +23,11 @@ defmodule ExCrowdin.Config do
     )
   end
 
+  defp expand_value({:system, env})
+       when is_binary(env) do
+    System.get_env(env)
+  end
+
   defp expand_value({module, function, args})
        when is_atom(function) and is_list(args) do
     apply(module, function, args)

@@ -3,18 +3,19 @@ defmodule ExCrowdin.API do
   Utilities for interacting with the Crowdin API v2.
   """
 
-  alias ExCrowdin.Config
-  alias HTTPoison.{Error, Response}
-  require Logger
+  alias ExCrowdin.{Config, Request}
+
+  @api_path "https://api.crowdin.com/api/v2"
 
   @type method :: :get | :post | :put | :delete | :patch
   @type headers :: %{String.t() => String.t()} | %{}
   @type body :: iodata() | {:multipart, list()}
 
+  @request_module if Mix.env() == :test, do: ExCrowdin.RequestMock, else: Request
+
   @doc """
   In config.exs your implicit or expicit configuration is:
-    config ex_:crowdin,
-      json_library: Poison # defaults to Jason but can be configured to Poison
+      config ex_:crowdin, json_library: Poison # defaults to Jason but can be configured to Poison
   """
   @spec json_library() :: module
   def json_library do
@@ -22,36 +23,43 @@ defmodule ExCrowdin.API do
   end
 
   @doc """
-  In config.exs:
-    config :ex_crowdin,
-      access_token: "<your personal access token on Crowdin>"
+  In config.exs, use a string, a function or a tuple:
+      config :ex_crowdin, access_token: System.get_env("CROWDIN_ACCESS_TOKEN")
+
+  or:
+      config :ex_crowdin, access_token: {:system, "CROWDIN_ACCESS_TOKEN"}
+
+  or:
+      config :ex_crowdin, access_token: {MyApp.Config, :crowdin_access_token, []}
   """
   def access_token do
     Config.resolve(:access_token)
   end
 
   @doc """
-  In config.exs:
-    config :ex_crowdin,
-      project_id: "<your project ID on Crowdin>"
+  In config.exs, use a string, a function or a tuple:
+      config :ex_crowdin, project_id: System.get_env("CROWDIN_PROJECT_ID")
+
+  or:
+      config :ex_crowdin, access_token: {:system, "CROWDIN_PROJECT_ID"}
+
+  or:
+      config :ex_crowdin, access_token: {MyApp.Config, :crowdin_project_id, []}
   """
   def project_id do
     Config.resolve(:project_id)
   end
 
-  def domain do
-    "https://api.crowdin.com/api/v2/projects/#{project_id()}"
+  defp api_path do
+    @api_path
   end
 
   @spec add_default_headers(headers) :: headers
-  def add_default_headers(headers) do
+  defp add_default_headers(headers) do
     Map.merge(headers, %{
       "Accept" => "application/json; charset=utf8",
       "Content-Type" => "application/json"
-      # "Accept-Encoding" => "gzip",
-      # "Connection" => "keep-alive"
     })
-    |> IO.inspect()
   end
 
   @spec add_auth_header(headers) :: headers
@@ -60,7 +68,7 @@ defmodule ExCrowdin.API do
   end
 
   @spec request(String.t(), method, body, headers, list) ::
-          {:ok, map} | {:error, Stripe.Error.t()}
+          {:ok, map} | {:error, Error.t()}
   def request(path, method, body \\ "", headers \\ %{}, opts \\ []) do
     req_url = build_path(path)
 
@@ -70,32 +78,24 @@ defmodule ExCrowdin.API do
       |> add_auth_header()
       |> Map.to_list()
 
-    HTTPoison.request(method, req_url, body, req_headers, opts)
-    |> IO.inspect()
-    |> handle_response()
+    @request_module.request(method, req_url, body, req_headers, opts)
   end
-
-  defp handle_response({:ok, %Response{body: body, status_code: code}})
-       when code in 200..299 do
-    {:ok, json_library().decode!(body)}
-  end
-
-  defp handle_response(
-         {:ok, %Response{body: body, status_code: _, request_url: request_url}}
-       ) do
-    Logger.error(inspect(body))
-    Logger.error(inspect(request_url))
-    {:error, body}
-  end
-
-  defp handle_response({:error, %Error{} = error}),
-    do: {:error, error}
 
   defp build_path(path) do
     if String.starts_with?(path, "/") do
-      "#{domain()}#{path}"
+      "#{api_path()}#{path}"
     else
-      "#{domain()}/#{path}"
+      "#{api_path()}/#{path}"
+    end
+  end
+
+  @callback project_path(String.t(), String.t()) :: String.t()
+  def project_path(project_id, path) do
+    project_path = "/projects/#{project_id}"
+    if String.starts_with?(path, "/") do
+      "#{project_path}#{path}"
+    else
+      "#{project_path}/#{path}"
     end
   end
 end

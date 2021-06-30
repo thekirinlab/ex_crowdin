@@ -7,6 +7,7 @@ defmodule ExCrowdin.MixProject do
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       description: description(),
       package: package()
@@ -20,6 +21,9 @@ defmodule ExCrowdin.MixProject do
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support", "config/text.exs"]
+  defp elixirc_paths(_), do: ["lib"]
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
@@ -27,6 +31,7 @@ defmodule ExCrowdin.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:jason, "~> 1.1"},
       {:httpoison, "~> 1.0"},
+      {:mox, "~> 0.5", only: :test},
       {:ex_doc, "~> 0.18", only: :dev}
     ]
   end

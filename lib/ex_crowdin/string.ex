@@ -7,7 +7,15 @@ defmodule ExCrowdin.String do
 
   alias ExCrowdin.API
 
-  def list do
-    API.request("/strings", :get)
+  alias ExCrowdin.API
+
+  def list(project_id \\ API.project_id()) do
+    path = API.project_path(project_id, "/strings")
+    API.request(path, :get)
+  end
+
+  def add(params, project_id \\ API.project_id()) do
+    path = API.project_path(project_id, "/strings")
+    API.request(path, :post, params)
   end
 end
