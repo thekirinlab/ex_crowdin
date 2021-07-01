@@ -17,7 +17,14 @@ defmodule ExCrowdin.Request do
 
   defp handle_response({:ok, %Response{body: body, status_code: code}})
        when code in 200..299 do
-    {:ok, API.json_library().decode!(body)}
+    Logger.debug("body: #{inspect(body)}")
+
+    decoded_body = case body do
+      "" -> ""
+      _ -> API.json_library().decode!(body)
+    end
+
+    {:ok, decoded_body}
   end
 
   defp handle_response(

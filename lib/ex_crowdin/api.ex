@@ -56,10 +56,12 @@ defmodule ExCrowdin.API do
 
   @spec add_default_headers(headers) :: headers
   defp add_default_headers(headers) do
-    Map.merge(headers, %{
-      "Accept" => "application/json; charset=utf8",
-      "Content-Type" => "application/json"
-    })
+    Map.merge(%{
+      "Accept": "application/json; charset=utf8",
+      "Content-Type": "application/json"
+    },
+      headers
+    )
   end
 
   @spec add_auth_header(headers) :: headers
@@ -78,7 +80,17 @@ defmodule ExCrowdin.API do
       |> add_auth_header()
       |> Map.to_list()
 
-    @request_module.request(method, req_url, body, req_headers, opts)
+    encoded_body = encode_body(body, method, req_headers)
+
+    @request_module.request(method, req_url, encoded_body, req_headers, opts)
+  end
+
+  defp encode_body(body, method, req_headers) do
+    if method != :get && Keyword.get(req_headers, :"Content-Type") == "application/json" do
+      json_library().encode!(body)
+    else
+      body
+    end
   end
 
   defp build_path(path) do
