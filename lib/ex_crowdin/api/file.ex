@@ -7,8 +7,9 @@ defmodule ExCrowdin.File do
 
   alias ExCrowdin.API
 
-  def list(project_id \\ API.project_id()) do
-    path = API.project_path(project_id, "/files")
+  def list(query \\ %{}, project_id \\ API.project_id()) do
+    encoded_query = URI.encode_query(query)
+    path = API.project_path(project_id, "/files?#{encoded_query}")
     API.request(path, :get)
   end
 

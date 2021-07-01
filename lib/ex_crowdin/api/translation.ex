@@ -7,9 +7,13 @@ defmodule ExCrowdin.Translation do
 
   alias ExCrowdin.API
 
-  def list(string_id, language_id, project_id \\ API.project_id()) do
-    query = %{"stringId" => string_id, "languageId" => language_id} |> URI.encode_query()
-    path = API.project_path(project_id, "/translations?#{query}")
+  def list(string_id, language_id, query \\ %{}, project_id \\ API.project_id()) do
+    encoded_query =
+      %{"stringId" => string_id, "languageId" => language_id}
+      |> Map.merge(query)
+      |> URI.encode_query()
+
+    path = API.project_path(project_id, "/translations?#{encoded_query}")
     API.request(path, :get)
   end
 

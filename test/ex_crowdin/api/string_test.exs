@@ -65,7 +65,7 @@ defmodule ExCrowdin.StringTest do
       "storageId"=>  storage_id,
       "name" => filename,
       "title" => "test_file",
-      "type" => "json",
+      "type" => "macosx",
     }
 
     RequestMock
