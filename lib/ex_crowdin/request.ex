@@ -6,10 +6,15 @@ defmodule ExCrowdin.Request do
   alias HTTPoison.{Error, Response}
   require Logger
 
-  alias ExCrowdin.API
+  alias ExCrowdin.Config
+
+  @default_opts [
+    timeout: 15_000,
+    recv_timeout: 15_000
+  ]
 
   @callback request(String.t(), String.t(), any(), list, list) :: {:ok, map} | {:error, any()}
-  def request(method, req_url, body, req_headers, opts) do
+  def request(method, req_url, body, req_headers, opts \\ @default_opts) do
     Logger.debug(req_url)
     HTTPoison.request(method, req_url, body, req_headers, opts)
     |> handle_response()
@@ -21,7 +26,7 @@ defmodule ExCrowdin.Request do
 
     decoded_body = case body do
       "" -> ""
-      _ -> API.json_library().decode!(body)
+      _ -> Config.json_library().decode!(body)
     end
 
     {:ok, decoded_body}

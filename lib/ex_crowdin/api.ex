@@ -13,43 +13,6 @@ defmodule ExCrowdin.API do
 
   @request_module if Mix.env() == :test, do: ExCrowdin.RequestMock, else: Request
 
-  @doc """
-  In config.exs your implicit or expicit configuration is:
-      config ex_:crowdin, json_library: Poison # defaults to Jason but can be configured to Poison
-  """
-  @spec json_library() :: module
-  def json_library do
-    Config.resolve(:json_library, Jason)
-  end
-
-  @doc """
-  In config.exs, use a string, a function or a tuple:
-      config :ex_crowdin, access_token: System.get_env("CROWDIN_ACCESS_TOKEN")
-
-  or:
-      config :ex_crowdin, access_token: {:system, "CROWDIN_ACCESS_TOKEN"}
-
-  or:
-      config :ex_crowdin, access_token: {MyApp.Config, :crowdin_access_token, []}
-  """
-  def access_token do
-    Config.resolve(:access_token)
-  end
-
-  @doc """
-  In config.exs, use a string, a function or a tuple:
-      config :ex_crowdin, project_id: System.get_env("CROWDIN_PROJECT_ID")
-
-  or:
-      config :ex_crowdin, access_token: {:system, "CROWDIN_PROJECT_ID"}
-
-  or:
-      config :ex_crowdin, access_token: {MyApp.Config, :crowdin_project_id, []}
-  """
-  def project_id do
-    Config.resolve(:project_id)
-  end
-
   defp api_path do
     @api_path
   end
@@ -66,11 +29,11 @@ defmodule ExCrowdin.API do
 
   @spec add_auth_header(headers) :: headers
   defp add_auth_header(headers) do
-    Map.put(headers, "Authorization", "Bearer #{access_token()}")
+    Map.put(headers, "Authorization", "Bearer #{Config.access_token()}")
   end
 
   @spec request(String.t(), method, body, headers, list) ::
-          {:ok, map} | {:error, Error.t()}
+          {:ok, map} | {:error, any()}
   def request(path, method, body \\ "", headers \\ %{}, opts \\ []) do
     req_url = build_path(path)
 
@@ -87,7 +50,7 @@ defmodule ExCrowdin.API do
 
   defp encode_body(body, method, req_headers) do
     if method != :get && Keyword.get(req_headers, :"Content-Type") == "application/json" do
-      json_library().encode!(body)
+      Config.json_library().encode!(body)
     else
       body
     end
