@@ -6,7 +6,7 @@ defmodule ExCrowdin.Definition do
   defmacro __using__(opts) do
     quote do
       Module.put_attribute(__MODULE__, :ex_crowdin_fields, unquote(synchronizable_fields(opts)))
-      Module.put_attribute(__MODULE__, :ex_crowdin_name, unquote(synchronizable_name(opts)))
+      Module.put_attribute(__MODULE__, :ex_crowdin_name, unquote(synchronizable_name(opts, __CALLER__)))
 
       @spec __synchronize__(:fields) :: list(atom)
       def __synchronize__(:fields), do: @ex_crowdin_fields
@@ -28,15 +28,15 @@ defmodule ExCrowdin.Definition do
     end
   end
 
-  defp synchronizable_name(opts) do
+  defp synchronizable_name(opts, caller_module) do
     case Keyword.fetch(opts, :name) do
-      :error -> name_from_module()
+      :error -> name_from_module(caller_module)
       {:ok, name} -> name
     end
   end
 
-  defp name_from_module do
-    __MODULE__
+  defp name_from_module(caller_module) do
+    caller_module
     |> Module.split()
     |> List.last()
     |> Macro.underscore()

@@ -23,6 +23,6 @@ defmodule ExCrowdin.StorageTest do
     end)
 
     {:ok, storage_response} = Storage.add(body, filename)
-    storage_id = storage_response["data"]["id"]
+    assert storage_response["data"]["id"]
   end
 end

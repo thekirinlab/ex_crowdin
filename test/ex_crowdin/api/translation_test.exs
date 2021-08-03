@@ -1,7 +1,7 @@
 defmodule ExCrowdin.TranslationTest do
   use ExUnit.Case
 
-  alias ExCrowdin.{File, Storage, String, Translation}
+  alias ExCrowdin.{String, Translation}
   alias ExCrowdin.RequestMock
 
   import Mox
@@ -35,7 +35,7 @@ defmodule ExCrowdin.TranslationTest do
         }}
     end)
 
-    {:ok, response} = Translation.list(string_id, "id")
+    assert {:ok, _} = Translation.list(string_id, "id")
   end
 
 
@@ -106,7 +106,7 @@ defmodule ExCrowdin.TranslationTest do
         }}
     end)
 
-    {:ok, response} = Translation.add(translation_body)
+    assert {:ok, _} = Translation.add(translation_body)
   end
 
   test "DELETE /project/:project_id/strings" do

@@ -5,7 +5,7 @@ defmodule ExCrowdin do
     Uploader.get_file_id(struct, field)
   end
 
-  def create_crowdin_file(%{__struct__: module} = struct) do
+  def create_crowdin_file(struct) do
     Uploader.create_crowdin_file(struct)
   end
 

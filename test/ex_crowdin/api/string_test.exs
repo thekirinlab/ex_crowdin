@@ -10,7 +10,6 @@ defmodule ExCrowdin.StringTest do
 
 
   test "GET /project/:project_id/strings" do
-    filename = "test_file_123.json"
     sample_response = {:ok,
       %{
         "data" => [
@@ -134,7 +133,7 @@ defmodule ExCrowdin.StringTest do
         }}
     end)
 
-    {:ok, response} = String.add(body)
+    assert {:ok, _} = String.add(body)
   end
 
   test "DELETE /project/:project_id/strings" do
