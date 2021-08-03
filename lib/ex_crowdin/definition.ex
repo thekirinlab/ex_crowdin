@@ -6,7 +6,7 @@ defmodule ExCrowdin.Definition do
   defmacro __using__(opts) do
     quote do
       Module.put_attribute(__MODULE__, :ex_crowdin_fields, unquote(synchronizable_fields(opts)))
-      Module.put_attribute(__MODULE__, :ex_crowdin_name, unquote(synchronizable_name(opts, __CALLER__)))
+      Module.put_attribute(__MODULE__, :ex_crowdin_name, unquote(synchronizable_name(opts, __CALLER__.module)))
 
       @spec __synchronize__(:fields) :: list(atom)
       def __synchronize__(:fields), do: @ex_crowdin_fields
