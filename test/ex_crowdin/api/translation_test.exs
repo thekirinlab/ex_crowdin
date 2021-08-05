@@ -44,12 +44,12 @@ defmodule ExCrowdin.TranslationTest do
     file_id = 24
 
     body = %{
-      "text": "Not all videos are shown to users. See more",
-      "identifier": "test_123",
-      "fileId": file_id,
-      "context": "shown on main page",
-      "isHidden": false,
-      "maxLength": 35
+      text: "Not all videos are shown to users. See more",
+      identifier: "test_123",
+      fileId: file_id,
+      context: "shown on main page",
+      isHidden: false,
+      maxLength: 35
     }
 
     RequestMock
@@ -81,9 +81,9 @@ defmodule ExCrowdin.TranslationTest do
 
     string_id = response["data"]["id"]
     translation_body = %{
-      "stringId": string_id,
-      "languageId": "id",
-      "text": "Tidak semua video ditampilkan."
+      stringId: string_id,
+      languageId: "id",
+      text: "Tidak semua video ditampilkan."
     }
 
     RequestMock

@@ -100,12 +100,12 @@ defmodule ExCrowdin.StringTest do
     file_id = file_response["data"]["id"]
 
     body = %{
-      "text": "Not all videos are shown to users. See more",
-      "identifier": "test_123",
-      "fileId": file_id,
-      "context": "shown on main page",
-      "isHidden": false,
-      "maxLength": 35
+      text: "Not all videos are shown to users. See more",
+      identifier: "test_123",
+      fileId: file_id,
+      context: "shown on main page",
+      isHidden: false,
+      maxLength: 35
     }
 
     RequestMock

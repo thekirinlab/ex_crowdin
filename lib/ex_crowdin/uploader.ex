@@ -72,24 +72,28 @@ defmodule ExCrowdin.Uploader do
   # Tfw.Utils.CrowdinUpload.create_crowdin_file(%Pack{})
   def create_crowdin_file(%{__struct__: module} = struct) do
     module.__synchronize__(:fields)
-    |> Enum.each(fn field ->
-      filename = get_filename(struct, field)
-
-      with {:ok, storage_response} <- ExCrowdinStorage.add(" ", filename),
-           file_body <- build_file_body(struct, storage_response["data"]["id"], field),
-           {:ok, file_response} <- ExCrowdinFile.add(file_body) do
-        file_id = file_response["data"]["id"]
-        Logger.info("Init file successfully with file ID #{file_id}")
-        Logger.info(inspect(file_response))
-        {:ok, file_response}
-      else
-        {:error, error} ->
-          Logger.error("Error creating file on Crowdin: #{inspect(error)}")
-          {:error, error}
-      end
+    |> Enum.map(fn field ->
+      create_crowdin_file(struct, field)
     end)
   end
 
+  def create_crowdin_file(struct, field) do
+    filename = get_filename(struct, field)
+    with {:ok, storage_response} <- ExCrowdinStorage.add(" ", filename),
+          file_body <- build_file_body(struct, storage_response["data"]["id"], field),
+          {:ok, file_response} <- ExCrowdinFile.add(file_body) do
+      file_id = file_response["data"]["id"]
+      Logger.info("Init file successfully with file ID #{file_id}")
+      Logger.info(inspect(file_response))
+      {:ok, file_response}
+    else
+      {:error, error} ->
+        Logger.error("Error creating file on Crowdin: #{inspect(error)}")
+        {:error, error}
+    end
+  end
+
+  @spec get_file_id(struct(), atom()) :: {:ok, binary()} | {:error, any()}
   def get_file_id(struct, field) do
     filename = get_filename(struct, field)
 
@@ -99,7 +103,9 @@ defmodule ExCrowdin.Uploader do
       if item_response && item_response["data"] do
         {:ok, item_response["data"]["id"]}
       else
-        {:error, "File not yet created! Please run `create_crowdin_file()` first!"}
+        with {:ok, file_response} <- create_crowdin_file(struct, field) do
+          {:ok, file_response["data"]["id"]}
+        end
       end
     end
   end
