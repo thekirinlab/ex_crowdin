@@ -3,6 +3,8 @@ defmodule ExCrowdin.Sync.Downloader do
   import Ecto.Query, only: [from: 2]
   import Ecto.Changeset, only: [change: 2]
 
+  require Logger
+
   @doc """
   Download copy from Crowdin and update schema's translations field
   """
@@ -37,6 +39,8 @@ defmodule ExCrowdin.Sync.Downloader do
         locale_translations = Map.get(record.translations, locale) || %{}
         locale_translations = Map.merge(locale_translations, %{"#{field}": text})
         translations = Map.merge(record.translations, %{"#{locale}" => locale_translations})
+
+        Logger.debug("translations: #{inspect(translations)}")
 
         change(record, %{translations: translations})
         |> repo.update()
