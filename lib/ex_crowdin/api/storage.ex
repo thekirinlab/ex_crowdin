@@ -19,6 +19,7 @@ defmodule ExCrowdin.Storage do
       %{
         "Crowdin-API-FileName" => filename,
         "Content-Type" => "application/octet-stream"
-      })
+      }
+    )
   end
 end

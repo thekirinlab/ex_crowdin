@@ -3,6 +3,7 @@ defmodule ExCrowdin.Downloader do
 
   def get_crowdin_translations(locale, field, file_id, page \\ 0) do
     record_per_page = 500
+
     with {:ok, %{"data" => data}} <-
            Translation.list_language_translations(
              locale,

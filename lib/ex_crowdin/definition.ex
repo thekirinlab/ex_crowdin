@@ -3,13 +3,23 @@ defmodule ExCrowdin.Definition do
   Upload provider profile's copy to Crowdin and download translations from Crowdin
   """
 
-  @default_string_ids_field  :crowdin_string_ids
+  @default_string_ids_field :crowdin_string_ids
 
   defmacro __using__(opts) do
     quote do
       Module.put_attribute(__MODULE__, :ex_crowdin_fields, unquote(synchronizable_fields(opts)))
-      Module.put_attribute(__MODULE__, :ex_crowdin_name, unquote(synchronizable_name(opts, __CALLER__.module)))
-      Module.put_attribute(__MODULE__, :ex_crowdin_string_ids_field, unquote(synchronizable_string_ids_field(opts)))
+
+      Module.put_attribute(
+        __MODULE__,
+        :ex_crowdin_name,
+        unquote(synchronizable_name(opts, __CALLER__.module))
+      )
+
+      Module.put_attribute(
+        __MODULE__,
+        :ex_crowdin_string_ids_field,
+        unquote(synchronizable_string_ids_field(opts))
+      )
 
       @spec __synchronize__(:fields) :: list(atom)
       def __synchronize__(:fields), do: @ex_crowdin_fields
@@ -46,7 +56,8 @@ defmodule ExCrowdin.Definition do
       {:ok, string_ids_field} when is_atom(string_ids_field) ->
         string_ids_field
 
-      _ -> @default_string_ids_field
+      _ ->
+        @default_string_ids_field
     end
   end
 

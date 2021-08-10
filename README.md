@@ -10,7 +10,7 @@ by adding `ex_crowdin` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:ex_crowdin, "~> 0.1.2"}
+    {:ex_crowdin, "~> 0.2.0"}
   ]
 end
 ```

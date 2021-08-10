@@ -79,9 +79,10 @@ defmodule ExCrowdin.Uploader do
 
   def create_crowdin_file(struct, field) do
     filename = get_filename(struct, field)
+
     with {:ok, storage_response} <- ExCrowdinStorage.add(" ", filename),
-          file_body <- build_file_body(struct, storage_response["data"]["id"], field),
-          {:ok, file_response} <- ExCrowdinFile.add(file_body) do
+         file_body <- build_file_body(struct, storage_response["data"]["id"], field),
+         {:ok, file_response} <- ExCrowdinFile.add(file_body) do
       file_id = file_response["data"]["id"]
       Logger.info("Init file successfully with file ID #{file_id}")
       Logger.info(inspect(file_response))

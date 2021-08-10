@@ -16,6 +16,7 @@ defmodule ExCrowdin.Request do
   @callback request(String.t(), String.t(), any(), list, list) :: {:ok, map} | {:error, any()}
   def request(method, req_url, body, req_headers, opts \\ @default_opts) do
     Logger.debug(req_url)
+
     HTTPoison.request(method, req_url, body, req_headers, opts)
     |> handle_response()
   end
@@ -24,17 +25,16 @@ defmodule ExCrowdin.Request do
        when code in 200..299 do
     Logger.debug("body: #{inspect(body)}")
 
-    decoded_body = case body do
-      "" -> ""
-      _ -> Config.json_library().decode!(body)
-    end
+    decoded_body =
+      case body do
+        "" -> ""
+        _ -> Config.json_library().decode!(body)
+      end
 
     {:ok, decoded_body}
   end
 
-  defp handle_response(
-         {:ok, %Response{body: body, status_code: _, request_url: request_url}}
-       ) do
+  defp handle_response({:ok, %Response{body: body, status_code: _, request_url: request_url}}) do
     Logger.error(inspect(body))
     Logger.error(inspect(request_url))
     {:error, body}

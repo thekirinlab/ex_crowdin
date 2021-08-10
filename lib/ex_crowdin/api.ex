@@ -19,10 +19,11 @@ defmodule ExCrowdin.API do
 
   @spec add_default_headers(headers) :: headers
   defp add_default_headers(headers) do
-    Map.merge(%{
-      "Accept": "application/json; charset=utf8",
-      "Content-Type": "application/json"
-    },
+    Map.merge(
+      %{
+        Accept: "application/json; charset=utf8",
+        "Content-Type": "application/json"
+      },
       headers
     )
   end
@@ -67,6 +68,7 @@ defmodule ExCrowdin.API do
   @callback project_path(String.t(), String.t()) :: String.t()
   def project_path(project_id, path) do
     project_path = "/projects/#{project_id}"
+
     if String.starts_with?(path, "/") do
       "#{project_path}#{path}"
     else

@@ -8,9 +8,7 @@ defmodule ExCrowdin.StorageTest do
   # Make sure mocks are verified when the test exits
   setup :verify_on_exit!
 
-
   test "GET /storages" do
-
   end
 
   test "POST /storage" do
@@ -19,7 +17,7 @@ defmodule ExCrowdin.StorageTest do
 
     RequestMock
     |> expect(:request, fn _, _, _, _, _ ->
-      {:ok, %{"data" => %{"fileName" => "test_file_124.strings", "id" => 620306914}}}
+      {:ok, %{"data" => %{"fileName" => "test_file_124.strings", "id" => 620_306_914}}}
     end)
 
     {:ok, storage_response} = Storage.add(body, filename)

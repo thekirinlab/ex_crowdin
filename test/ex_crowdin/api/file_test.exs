@@ -8,9 +8,7 @@ defmodule ExCrowdin.FileTest do
   # Make sure mocks are verified when the test exits
   setup :verify_on_exit!
 
-
   test "GET /project/:project_id/files" do
-
   end
 
   test "POST /project/:project_id/files" do
@@ -20,7 +18,7 @@ defmodule ExCrowdin.FileTest do
 
     RequestMock
     |> expect(:request, fn _, _, _, _, _ ->
-      {:ok, %{"data" => %{"fileName" => "test_file_124.strings", "id" => 620306914}}}
+      {:ok, %{"data" => %{"fileName" => "test_file_124.strings", "id" => 620_306_914}}}
     end)
 
     {:ok, storage_response} = Storage.add(body, filename)
@@ -28,35 +26,35 @@ defmodule ExCrowdin.FileTest do
 
     # ADD FILE
     file_body = %{
-      "storageId"=>  storage_id,
+      "storageId" => storage_id,
       "name" => filename,
       "title" => "test_file",
-      "type" => "json",
+      "type" => "json"
     }
 
     RequestMock
     |> expect(:request, fn _, _, _, _, _ ->
       {:ok,
-        %{
-          "data" => %{
-            "branchId" => nil,
-            "createdAt" => "2021-07-01T07:45:46+00:00",
-            "directoryId" => nil,
-            "excludedTargetLanguages" => nil,
-            "exportOptions" => nil,
-            "id" => 20,
-            "importOptions" => nil,
-            "name" => "test_file_124.strings",
-            "path" => "/test_file_124.strings",
-            "priority" => "normal",
-            "projectId" => 462944,
-            "revisionId" => 1,
-            "status" => "active",
-            "title" => "test_file",
-            "type" => "macosx",
-            "updatedAt" => "2021-07-01T07:45:47+00:00"
-          }
-        }}
+       %{
+         "data" => %{
+           "branchId" => nil,
+           "createdAt" => "2021-07-01T07:45:46+00:00",
+           "directoryId" => nil,
+           "excludedTargetLanguages" => nil,
+           "exportOptions" => nil,
+           "id" => 20,
+           "importOptions" => nil,
+           "name" => "test_file_124.strings",
+           "path" => "/test_file_124.strings",
+           "priority" => "normal",
+           "projectId" => 462_944,
+           "revisionId" => 1,
+           "status" => "active",
+           "title" => "test_file",
+           "type" => "macosx",
+           "updatedAt" => "2021-07-01T07:45:47+00:00"
+         }
+       }}
     end)
 
     {:ok, file_response} = File.add(file_body)

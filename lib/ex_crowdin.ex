@@ -46,7 +46,8 @@ defmodule ExCrowdin do
 
       {:ok, %{"data" => %{"stringId" => string_id, "text" => text}}} = ExCrowdin.get_crowdin_translations("fr", title, 4576)
   """
-  @spec get_crowdin_translations(binary(), atom(), binary(), integer()) :: {:ok, list()} | {:error, any()}
+  @spec get_crowdin_translations(binary(), atom(), binary(), integer()) ::
+          {:ok, list()} | {:error, any()}
   def get_crowdin_translations(locale, field, file_id, page \\ 0) do
     Downloader.get_crowdin_translations(locale, field, file_id, page)
   end
