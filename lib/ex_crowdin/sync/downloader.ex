@@ -20,21 +20,23 @@ defmodule ExCrowdin.Sync.Downloader do
       Enum.each(locales, fn locale ->
         with {:ok, data} <- ExCrowdin.get_crowdin_translations(locale, field, file_id) do
           Enum.each(data, fn response ->
-            update_translations(repo, query, field, string_ids_field, response, sync_module)
+            update_translations(repo, query, field, string_ids_field, locale, response, sync_module)
           end)
         end
       end)
     end
   end
 
-  defp update_translations(repo, query, field, string_ids_field, response, sync_module) do
+  defp update_translations(repo, query, field, string_ids_field, locale, response, sync_module) do
     if response["data"] do
       string_id = response["data"]["stringId"]
       record = find_record_by_string_id(string_id, repo, query, field, string_ids_field)
 
       if record do
         text = sync_module.deserialize_field(field, response["data"]["text"])
-        translations = record.translations |> Map.merge(%{"#{field}": text})
+        locale_translations = Map.get(record.translations, locale) || %{}
+        locale_translations = Map.merge(locale_translations, %{"#{field}": text})
+        translations = Map.merge(record.translations, %{"#{locale}" => locale_translations})
 
         change(record, %{translations: translations})
         |> repo.update()
